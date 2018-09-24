@@ -18,19 +18,25 @@ apt_repository 'mongodb-org' do
   action :add
 end
 
-
-template '/etc/mongod.conf' do
-  source 'mongod.conf.erb'
-end
-
-template '/lib/systemd/system/mongod.service' do
-  source 'mongod.service.erb'
-end
-
 package 'mongodb-org' do
   action [:install, :upgrade]
 end
 
 service 'mongod' do
   action [:enable, :start]
+end
+
+file '/etc/mongod.conf' do
+  action :delete
+  notifies(:restart, 'service[mongod]')
+end
+
+template '/etc/mongod.conf' do
+  source 'mongod.conf.erb'
+  notifies(:restart, 'service[mongod]')
+end
+
+template '/lib/systemd/system/mongod.service' do
+  source 'mongod.service.erb'
+  notifies(:restart, 'service[mongod]')
 end
