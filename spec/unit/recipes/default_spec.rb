@@ -18,14 +18,36 @@ describe 'mongo::default' do
     it 'converges successfully' do
       expect { chef_run }.to_not raise_error
     end
+    it 'converges successfully' do
+      expect { chef_run }.to_not raise_error
+    end
+
     it 'updates all sources' do
       expect(chef_run).to update_apt_update('update')
     end
+
     it 'should add mongo to the sources list' do
       expect(chef_run).to add_apt_repository('mongodb-org')
     end
-    it 'should install mongodb' do
-     expect(chef_run).to upgrade_package 'mongodb-org'
-   end
+
+    it 'should install mongod' do
+      expect(chef_run).to upgrade_package 'mongodb-org'
+    end
+
+    it "should create the mongod.conf file in /etc/mongod.conf" do
+        expect(chef_run).to create_template("/etc/mongod.conf")
+      end
+
+      it "should create the mongod.conf file in /lib/systemd/system/mongod.service" do
+        expect(chef_run).to create_template("/lib/systemd/system/mongod.service")
+      end
+
+    it "should start the MongoDB service" do
+      expect(chef_run).to start_service("mongod")
+    end
+    it "should enable the MongoDB service" do
+      expect(chef_run).to enable_service("mongod")
+    end
+    
   end
 end

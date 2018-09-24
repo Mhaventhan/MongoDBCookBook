@@ -18,6 +18,19 @@ apt_repository 'mongodb-org' do
   action :add
 end
 
+
+template '/etc/mongod.conf' do
+  source 'mongod.conf.erb'
+end
+
+template '/lib/systemd/system/mongod.service' do
+  source 'mongod.service.erb'
+end
+
 package 'mongodb-org' do
-  action :upgrade
+  action [:install, :upgrade]
+end
+
+service 'mongod' do
+  action [:enable, :start]
 end
